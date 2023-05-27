@@ -1,0 +1,196 @@
+<html>
+<head>
+<title>seminar3.c</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #a9b7c6;}
+.s1 { color: #bbb529;}
+.s2 { color: #6a8759;}
+.s3 { color: #cc7832;}
+.s4 { color: #808080;}
+.s5 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+seminar3.c</font>
+</center></td></tr></table>
+<pre>
+<span class="s1">#include </span><span class="s2">&quot;seminar3.h&quot;</span>
+
+<span class="s1">#include </span><span class="s2">&lt;stdio.h&gt;</span>
+<span class="s1">#include </span><span class="s2">&lt;stdlib.h&gt;</span>
+<span class="s1">#include </span><span class="s2">&lt;string.h&gt;</span>
+
+<span class="s3">struct </span><span class="s0">InnerPlayer* getInnerPlayers(</span><span class="s3">char </span><span class="s0">*names</span><span class="s3">, int </span><span class="s0">*passes</span><span class="s3">, int </span><span class="s0">num_player</span><span class="s3">,char </span><span class="s0">*idx_players</span><span class="s3">, int </span><span class="s0">total_players){</span>
+    <span class="s4">// create the array of team mates</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_players =</span>
+            <span class="s0">malloc(num_player * </span><span class="s3">sizeof</span><span class="s0">(</span><span class="s3">struct </span><span class="s0">InnerPlayer))</span><span class="s3">;</span>
+
+    <span class="s4">// iterate over the team mates' data storing</span>
+    <span class="s4">// them into the array</span>
+    <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">i = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">i &lt; num_player</span><span class="s3">; </span><span class="s0">i++) {</span>
+        <span class="s0">inner_players[i].name = names[i]</span><span class="s3">;</span>
+        <span class="s0">inner_players[i].passes = passes[i]</span><span class="s3">;</span>
+        <span class="s4">// look for the index of the current team mate</span>
+        <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">j = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">j &lt; total_players</span><span class="s3">; </span><span class="s0">j++) {</span>
+            <span class="s3">if </span><span class="s0">(names[i] == idx_players[j]) {</span>
+                <span class="s0">inner_players[i].idx = j</span><span class="s3">;</span>
+                <span class="s3">break;</span>
+            <span class="s0">}</span>
+        <span class="s0">}</span>
+    <span class="s0">}</span>
+    <span class="s3">return </span><span class="s0">inner_players</span><span class="s3">;</span>
+<span class="s0">}</span>
+
+<span class="s3">struct </span><span class="s0">OuterPlayer getOuterPlayer(</span><span class="s3">char </span><span class="s0">name</span><span class="s3">, int </span><span class="s0">num_associations</span><span class="s3">, struct </span><span class="s0">InnerPlayer* inner_players){</span>
+    <span class="s3">struct </span><span class="s0">OuterPlayer outerplayer</span><span class="s3">;</span>
+
+    <span class="s0">outerplayer.name = name</span><span class="s3">;</span>
+    <span class="s0">outerplayer.num_associations = num_associations</span><span class="s3">;</span>
+    <span class="s0">outerplayer.associations = malloc(</span><span class="s3">sizeof </span><span class="s0">(</span><span class="s3">struct </span><span class="s0">InnerPlayer) * num_associations)</span><span class="s3">;</span>
+    <span class="s0">memcpy(outerplayer.associations</span><span class="s3">, </span><span class="s0">inner_players</span><span class="s3">, sizeof </span><span class="s0">(</span><span class="s3">struct </span><span class="s0">InnerPlayer) * num_associations)</span><span class="s3">;</span>
+
+    <span class="s3">return </span><span class="s0">outerplayer</span><span class="s3">;</span>
+<span class="s0">}</span>
+
+<span class="s3">struct </span><span class="s0">OuterPlayer* populatePassNet(</span><span class="s3">int </span><span class="s0">total_players) {</span>
+    <span class="s4">// array with the list of players' names. it serves</span>
+    <span class="s4">// to map player's name with an integer index</span>
+    <span class="s3">char </span><span class="s0">idx_players[</span><span class="s5">11</span><span class="s0">] = {</span><span class="s2">'A'</span><span class="s3">, </span><span class="s2">'B'</span><span class="s3">, </span><span class="s2">'C'</span><span class="s3">, </span><span class="s2">'D'</span><span class="s3">, </span><span class="s2">'E'</span><span class="s3">, </span><span class="s2">'F'</span><span class="s3">, </span><span class="s2">'G'</span><span class="s3">, </span><span class="s2">'H'</span><span class="s3">, </span><span class="s2">'I'</span><span class="s3">,</span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s0">}</span><span class="s3">;</span>
+
+    <span class="s3">struct </span><span class="s0">OuterPlayer* outerplayers = malloc(total_players * </span><span class="s3">sizeof</span><span class="s0">(</span><span class="s3">struct </span><span class="s0">OuterPlayer))</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player A</span>
+    <span class="s3">char </span><span class="s0">namesA[</span><span class="s5">2</span><span class="s0">] = { </span><span class="s2">'C'</span><span class="s3">, </span><span class="s2">'J' </span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesA[</span><span class="s5">2</span><span class="s0">] = { </span><span class="s5">20</span><span class="s3">, </span><span class="s5">5 </span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PA = getInnerPlayers(namesA</span><span class="s3">, </span><span class="s0">passesA</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">0</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">0</span><span class="s0">]</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">inner_PA)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player B</span>
+    <span class="s3">char </span><span class="s0">namesB[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s2">'E'</span><span class="s3">, </span><span class="s2">'C'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesB[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s5">15</span><span class="s3">, </span><span class="s5">12</span><span class="s3">, </span><span class="s5">2</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PB = getInnerPlayers(namesB</span><span class="s3">, </span><span class="s0">passesB</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">1</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">1</span><span class="s0">]</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">inner_PB)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player C</span>
+    <span class="s3">char </span><span class="s0">namesC[</span><span class="s5">6</span><span class="s0">] = {</span><span class="s2">'D'</span><span class="s3">, </span><span class="s2">'F'</span><span class="s3">, </span><span class="s2">'G'</span><span class="s3">, </span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'A'</span><span class="s3">, </span><span class="s2">'B'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesC[</span><span class="s5">6</span><span class="s0">] = {</span><span class="s5">12</span><span class="s3">, </span><span class="s5">9</span><span class="s3">, </span><span class="s5">4</span><span class="s3">, </span><span class="s5">5</span><span class="s3">, </span><span class="s5">20</span><span class="s3">, </span><span class="s5">12</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PC = getInnerPlayers(namesC</span><span class="s3">, </span><span class="s0">passesC</span><span class="s3">, </span><span class="s5">6</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">2</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">2</span><span class="s0">]</span><span class="s3">, </span><span class="s5">6</span><span class="s3">, </span><span class="s0">inner_PC)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player D</span>
+    <span class="s3">char </span><span class="s0">namesD[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s2">'C'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesD[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s5">12</span><span class="s3">, </span><span class="s5">20</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PD = getInnerPlayers(namesD</span><span class="s3">, </span><span class="s0">passesD</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">3</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">3</span><span class="s0">]</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">inner_PD)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player E</span>
+    <span class="s3">char </span><span class="s0">namesE[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s3">, </span><span class="s2">'B'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesE[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s5">20</span><span class="s3">, </span><span class="s5">10</span><span class="s3">, </span><span class="s5">15</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PE = getInnerPlayers(namesE</span><span class="s3">, </span><span class="s0">passesE</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">4</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">4</span><span class="s0">]</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">inner_PE)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player F</span>
+    <span class="s3">char </span><span class="s0">namesF[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s2">'K'</span><span class="s3">, </span><span class="s2">'C'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesF[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s5">11</span><span class="s3">, </span><span class="s5">9</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PF = getInnerPlayers(namesF</span><span class="s3">, </span><span class="s0">passesF</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">5</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">5</span><span class="s0">]</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">inner_PF)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player G</span>
+    <span class="s3">char </span><span class="s0">namesG[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s2">'K'</span><span class="s3">, </span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'C'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesG[</span><span class="s5">3</span><span class="s0">] = {</span><span class="s5">18</span><span class="s3">, </span><span class="s5">13</span><span class="s3">, </span><span class="s5">4</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PG = getInnerPlayers(namesG</span><span class="s3">, </span><span class="s0">passesG</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">6</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">6</span><span class="s0">]</span><span class="s3">, </span><span class="s5">3</span><span class="s3">, </span><span class="s0">inner_PG)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player H</span>
+    <span class="s3">char </span><span class="s0">namesH[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesH[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s5">6</span><span class="s3">, </span><span class="s5">4</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PH = getInnerPlayers(namesH</span><span class="s3">, </span><span class="s0">passesH</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">7</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">7</span><span class="s0">]</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">inner_PH)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player I</span>
+    <span class="s3">char </span><span class="s0">namesI[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s2">'J'</span><span class="s3">, </span><span class="s2">'K'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesI[</span><span class="s5">2</span><span class="s0">] = {</span><span class="s5">9</span><span class="s3">, </span><span class="s5">4</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PI = getInnerPlayers(namesI</span><span class="s3">, </span><span class="s0">passesI</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">8</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">8</span><span class="s0">]</span><span class="s3">, </span><span class="s5">2</span><span class="s3">, </span><span class="s0">inner_PI)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player J</span>
+    <span class="s3">char </span><span class="s0">namesJ[</span><span class="s5">7</span><span class="s0">] = {</span><span class="s2">'K'</span><span class="s3">, </span><span class="s2">'A'</span><span class="s3">, </span><span class="s2">'C'</span><span class="s3">, </span><span class="s2">'E'</span><span class="s3">, </span><span class="s2">'G'</span><span class="s3">, </span><span class="s2">'H'</span><span class="s3">, </span><span class="s2">'I'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesJ[</span><span class="s5">7</span><span class="s0">] = {</span><span class="s5">25</span><span class="s3">, </span><span class="s5">5</span><span class="s3">, </span><span class="s5">5</span><span class="s3">, </span><span class="s5">20</span><span class="s3">, </span><span class="s5">13</span><span class="s3">, </span><span class="s5">6</span><span class="s3">, </span><span class="s5">9</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PJ = getInnerPlayers(namesJ</span><span class="s3">, </span><span class="s0">passesJ</span><span class="s3">, </span><span class="s5">7</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">9</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">9</span><span class="s0">]</span><span class="s3">, </span><span class="s5">7</span><span class="s3">, </span><span class="s0">inner_PJ)</span><span class="s3">;</span>
+
+    <span class="s4">// Populate player K</span>
+    <span class="s3">char </span><span class="s0">namesK[</span><span class="s5">8</span><span class="s0">] = {</span><span class="s2">'B'</span><span class="s3">, </span><span class="s2">'D'</span><span class="s3">, </span><span class="s2">'E'</span><span class="s3">, </span><span class="s2">'F'</span><span class="s3">, </span><span class="s2">'G'</span><span class="s3">, </span><span class="s2">'H'</span><span class="s3">, </span><span class="s2">'I'</span><span class="s3">, </span><span class="s2">'J'</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">int </span><span class="s0">passesK[</span><span class="s5">8</span><span class="s0">] = {</span><span class="s5">2</span><span class="s3">, </span><span class="s5">20</span><span class="s3">, </span><span class="s5">10</span><span class="s3">, </span><span class="s5">11</span><span class="s3">, </span><span class="s5">18</span><span class="s3">, </span><span class="s5">4</span><span class="s3">, </span><span class="s5">4</span><span class="s3">, </span><span class="s5">25</span><span class="s0">}</span><span class="s3">;</span>
+    <span class="s3">struct </span><span class="s0">InnerPlayer* inner_PK = getInnerPlayers(namesK</span><span class="s3">, </span><span class="s0">passesK</span><span class="s3">, </span><span class="s5">8</span><span class="s3">, </span><span class="s0">idx_players</span><span class="s3">, </span><span class="s5">11</span><span class="s0">)</span><span class="s3">;</span>
+    <span class="s0">outerplayers[</span><span class="s5">10</span><span class="s0">] = getOuterPlayer(idx_players[</span><span class="s5">10</span><span class="s0">]</span><span class="s3">, </span><span class="s5">8</span><span class="s3">, </span><span class="s0">inner_PK)</span><span class="s3">;</span>
+
+    <span class="s3">return </span><span class="s0">outerplayers</span><span class="s3">;</span>
+<span class="s0">}</span>
+
+<span class="s4">//ToDo: calculate_total_passes()</span>
+<span class="s3">int </span><span class="s0">calculate_total_passes(</span><span class="s3">struct </span><span class="s0">OuterPlayer* player) {</span>
+    <span class="s4">//initialize the counter</span>
+    <span class="s3">int </span><span class="s0">total_passes = </span><span class="s5">0</span><span class="s3">;</span>
+
+    <span class="s4">//loop through all the associations(teammates) of the player</span>
+    <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">i = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">i &lt; player-&gt;num_associations</span><span class="s3">; </span><span class="s0">i++) {</span>
+        <span class="s4">//add the number of passes to the total</span>
+        <span class="s0">total_passes += player-&gt;associations[i].passes</span><span class="s3">;</span>
+    <span class="s0">}</span>
+
+    <span class="s3">return </span><span class="s0">total_passes</span><span class="s3">;</span>
+<span class="s0">}</span>
+
+<span class="s4">//ToDo: swapTopPlayers()</span>
+<span class="s3">void </span><span class="s0">swapTopPlayers(</span><span class="s3">struct </span><span class="s0">TopPlayer *player_one</span><span class="s3">, struct </span><span class="s0">TopPlayer *player_two) {</span>
+    <span class="s4">//create a temporary TopPlayer to hold the information of the first player</span>
+    <span class="s3">struct </span><span class="s0">TopPlayer temp = *player_one</span><span class="s3">;</span>
+    <span class="s4">//assign the second player's information to the first player</span>
+    <span class="s0">*player_one = *player_two</span><span class="s3">;</span>
+    <span class="s4">//assign the stored information of the first player (in temp) to the second player</span>
+    <span class="s0">*player_two = temp</span><span class="s3">;</span>
+<span class="s0">}</span>
+
+<span class="s4">//ToDo: bubbleSortTopPlayers()</span>
+<span class="s3">void </span><span class="s0">bubbleSortTopPlayers(</span><span class="s3">struct </span><span class="s0">TopPlayer arr[]</span><span class="s3">, int </span><span class="s0">total_players) {</span>
+    <span class="s4">//loop for each element in the array</span>
+    <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">i = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">i &lt; total_players - </span><span class="s5">1</span><span class="s3">; </span><span class="s0">i++) {</span>
+        <span class="s4">//nested loop for each unsorted element</span>
+        <span class="s4">//last i elements are already in place</span>
+        <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">j = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">j &lt; total_players - i - </span><span class="s5">1</span><span class="s3">; </span><span class="s0">j++) {</span>
+            <span class="s4">//if the current element has a lower degree or same degree</span>
+            <span class="s4">//but fewer passes than the next one, swap them</span>
+            <span class="s3">if </span><span class="s0">(arr[j].degree &lt; arr[j+</span><span class="s5">1</span><span class="s0">].degree || (arr[j].degree == arr[j+</span><span class="s5">1</span><span class="s0">].degree &amp;&amp; arr[j].total_passes &lt; arr[j+</span><span class="s5">1</span><span class="s0">].total_passes)) {</span>
+                <span class="s0">swapTopPlayers(&amp;arr[j]</span><span class="s3">, </span><span class="s0">&amp;arr[j+</span><span class="s5">1</span><span class="s0">])</span><span class="s3">;</span>
+            <span class="s0">}</span>
+        <span class="s0">}</span>
+    <span class="s0">}</span>
+<span class="s0">}</span>
+
+<span class="s4">//ToDo: find_top_players()</span>
+<span class="s3">void </span><span class="s0">find_top_players(</span><span class="s3">struct </span><span class="s0">OuterPlayer* players</span><span class="s3">, int </span><span class="s0">total_players) {</span>
+    <span class="s4">//create an array of TopPlayer to store the degree and total passes of each player</span>
+    <span class="s3">struct </span><span class="s0">TopPlayer top_players[total_players]</span><span class="s3">;</span>
+
+    <span class="s4">//for each player, fill in the degree and total passes</span>
+    <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">i = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">i &lt; total_players</span><span class="s3">; </span><span class="s0">i++) {</span>
+        <span class="s0">top_players[i].name = players[i].name</span><span class="s3">;</span>
+        <span class="s0">top_players[i].degree = players[i].num_associations</span><span class="s3">;</span>
+        <span class="s0">top_players[i].total_passes = calculate_total_passes(&amp;players[i])</span><span class="s3">;</span>
+    <span class="s0">}</span>
+
+    <span class="s4">//sort the array of TopPlayer</span>
+    <span class="s0">bubbleSortTopPlayers(top_players</span><span class="s3">, </span><span class="s0">total_players)</span><span class="s3">;</span>
+
+    <span class="s4">//display the top 3 players</span>
+    <span class="s3">for </span><span class="s0">(</span><span class="s3">int </span><span class="s0">i = </span><span class="s5">0</span><span class="s3">; </span><span class="s0">i &lt; </span><span class="s5">3</span><span class="s3">; </span><span class="s0">i++) {</span>
+        <span class="s0">printf(</span><span class="s2">&quot;Player %c: degree = %d, total passes = %d</span><span class="s3">\n</span><span class="s2">&quot;</span><span class="s3">, </span><span class="s0">top_players[i].name</span><span class="s3">, </span><span class="s0">top_players[i].degree</span><span class="s3">, </span><span class="s0">top_players[i].total_passes)</span><span class="s3">;</span>
+    <span class="s0">}</span>
+<span class="s0">}</span></pre>
+</body>
+</html>

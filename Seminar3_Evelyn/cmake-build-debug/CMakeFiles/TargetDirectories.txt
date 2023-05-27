@@ -1,0 +1,3 @@
+C:/Users/level/CLionProjects/Seminar3_Evelyn/cmake-build-debug/CMakeFiles/Seminar3_Evelyn.dir
+C:/Users/level/CLionProjects/Seminar3_Evelyn/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/level/CLionProjects/Seminar3_Evelyn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
